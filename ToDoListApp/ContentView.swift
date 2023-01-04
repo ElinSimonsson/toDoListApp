@@ -6,21 +6,50 @@
 //
 
 import SwiftUI
+import Firebase
 
 struct ContentView: View {
+    @EnvironmentObject var toDoList : ToDoList
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        NavigationView {
+            List() {
+                ForEach($toDoList.list) { $item in
+                    RowView(item: item)
+                }
+                .onDelete() { indexSet in
+                    delete(indexSet: indexSet)
+                }
+            }
+            .navigationTitle("To-do-list")
+            .navigationBarItems(trailing: NavigationLink(destination: AddToDoItemView()){
+                Image(systemName: "plus")
+                
+            })
         }
-        .padding()
+        .onAppear() {
+            print("appen körs")
+        }
+    }
+    
+    func delete(indexSet: IndexSet) {
+        toDoList.list.remove(atOffsets: indexSet)
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+
+struct RowView: View {
+    @State var item : Item
+    var body: some View {
+        HStack {
+            Text(item.name)
+            Toggle("", isOn: $item.isCompleted)
+        }
     }
+    
+    
 }
+//struct ContentView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ContentView()
+//    }
+//}
