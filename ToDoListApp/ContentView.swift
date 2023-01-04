@@ -6,47 +6,51 @@
 //
 
 import SwiftUI
-import Firebase
+import FirebaseFirestore
 
 struct ContentView: View {
-    @EnvironmentObject var toDoList : ToDoList
+    @StateObject var toDoList = ToDoList()
+    let db = Firestore.firestore()
+    
     var body: some View {
         NavigationView {
             List() {
-                ForEach($toDoList.list) { $item in
+                ForEach(toDoList.list) { item in
                     RowView(item: item)
                 }
                 .onDelete() { indexSet in
-                    delete(indexSet: indexSet)
+                    toDoList.deleteItem(indexSet: indexSet)
                 }
             }
             .navigationTitle("To-do-list")
             .navigationBarItems(trailing: NavigationLink(destination: AddToDoItemView()){
                 Image(systemName: "plus")
-                
             })
         }
         .onAppear() {
-            print("appen körs")
+            toDoList.listenToFirestore()
         }
     }
     
-    func delete(indexSet: IndexSet) {
-        toDoList.list.remove(atOffsets: indexSet)
-    }
-}
-
-
-struct RowView: View {
-    @State var item : Item
-    var body: some View {
-        HStack {
-            Text(item.name)
-            Toggle("", isOn: $item.isCompleted)
+    struct RowView: View {
+        @StateObject var toDoList = ToDoList()
+        var item : Item
+        var body: some View {
+            HStack {
+                Text(item.name)
+                Spacer()
+                Image(systemName: item.done ? "checkmark.circle" : "circle")
+                    .imageScale(.large)
+                    .foregroundColor(Color.orange)
+                    .onTapGesture {
+                        
+                        toDoList.updateToggleClicked(currentItem: item)
+                    }
+            }
         }
+        
+        
     }
-    
-    
 }
 //struct ContentView_Previews: PreviewProvider {
 //    static var previews: some View {

@@ -8,8 +8,9 @@
 import Foundation
 import FirebaseFirestoreSwift
 
-struct Item : Identifiable {
-    var id = UUID()
-    var name: String
-    var isCompleted: Bool = false
+struct Item : Codable , Identifiable {
+    @DocumentID var id : String?
+    var name : String
+    var category : String = ""
+    var done : Bool = false
 }

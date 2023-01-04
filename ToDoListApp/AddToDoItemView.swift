@@ -8,10 +8,12 @@
 import SwiftUI
 
 struct AddToDoItemView: View {
-    @EnvironmentObject var toDoList : ToDoList
-    
+    @StateObject var toDoList = ToDoList()
     @State private var newItemName = ""
+    @State var showAlert = false
     @Environment(\.presentationMode) var presentationMode
+    
+    
     var body: some View {
         NavigationView {
             VStack{
@@ -22,13 +24,21 @@ struct AddToDoItemView: View {
     }
         .navigationBarItems(trailing: Button("Save") {
             saveItem()
-            presentationMode.wrappedValue.dismiss()
         })
+        .alert(isPresented: $showAlert) {
+                    Alert(title: Text("Error!"),
+                          message: Text("You can´t save an object without content!"),
+                          dismissButton: .default(Text("OK")))
+                }
     }
     
     func saveItem () {
-        let newItem = Item(name: self.newItemName)
-        toDoList.list.append(newItem)
+        if self.newItemName.isEmpty {
+            showAlert = true
+        } else {
+            toDoList.addItem(itemName: self.newItemName)
+            presentationMode.wrappedValue.dismiss()
+        }
     }
 }
 

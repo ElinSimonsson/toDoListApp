@@ -15,12 +15,9 @@ struct ToDoListAppApp: App {
         FirebaseApp.configure()
     }
     
-    @StateObject var toToList = ToDoList()
-    
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(toToList)
         }
     }
 }
